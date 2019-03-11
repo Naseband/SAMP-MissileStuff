@@ -83,7 +83,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	    if(newkeys & KEY_SUBMISSION)
 	    {
 	    	TurretMode[playerid] ++;
-	    	if(TurretMode[playerid] > MISSILE_MODE_GUARDED) TurretMode[playerid] = MISSILE_MODE_ARTILLERY;
+	    	if(TurretMode[playerid] > MISSILE_MODE_SWARM) TurretMode[playerid] = MISSILE_MODE_SWARM;
 
 	    	if(TurretTarget[playerid])
 	    	{
@@ -98,6 +98,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	    		case MISSILE_MODE_RPG: format(text, sizeof(text), "Turret Mode: {FF9999}RPG");
 	    		case MISSILE_MODE_HOMING: format(text, sizeof(text), "Turret Mode: {FF9999}Homing Missile - Hold RMB while stationary");
 	    		case MISSILE_MODE_GUARDED: format(text, sizeof(text), "Turret Mode: {FF9999}Guarded Missile");
+	    		case MISSILE_MODE_SWARM: format(text, sizeof(text), "Turret Mode: {FF9999}Swarm Missile");
 	    	}
 
 	    	SendClientMessage(playerid, 0xFFFFFFFF, text);
@@ -146,6 +147,10 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
 					if(targetplayer == -1) FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_HOMING, .target_type = MISSILE_TARGET_POS, .target_x = TurretTargetPos[playerid][0], .target_y = TurretTargetPos[playerid][1], .target_z = TurretTargetPos[playerid][2]);
 					else FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_HOMING, .target_type = MISSILE_TARGET_PLAYER, .target_id = targetplayer);
+				}
+				case MISSILE_MODE_SWARM:
+				{
+					FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_SWARM);
 				}
 			}
 		}
