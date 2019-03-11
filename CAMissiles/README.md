@@ -3,23 +3,27 @@
 This include adds Missiles that can be fired by the script.
 
 There are various modes which can be chosen:
-- Artillery 		
-Fires a gravity-affected projectile that explodes on impact
-- RPG
-Fires an RPG projectile that travels in a straight line.
-- Homing
-Fires a homing missile at a certain target. Targets can be Positions, (Dyn.-/Pl.-)Objects, Players and Vehicles. Scripts can update the target position manually which (for example) could be used for a HL2-like guarded missile.
-- Guarded
-Fires a guarded missile. Must be fired by a player. The player will enter missile view, directly controlling the missile.
-- Swarm
-Fires a swarm missile, it detonates when close to any collision, launching multiple RPGs in random directions (extremely good for Air to Ground)
+- Artillery fires a gravity-affected projectile that explodes on impact.
+- RPG Missiles travel in a straight line until they collide.
+- Homing Missiles follow a target until they collide with the world or get close enough. Targets can be Positions, (Dyn.-/Pl.-)Objects, Players and Vehicles. Scripts can update the target position manually which (for example) could be used for a HL2-like guarded missile. For AA Missiles a speed for 90.0 or greater is recommended, unless you want Players to be able to evade them with a fast airplane. Homing Missiles will activate tracking 700 ms after launch to avoid an early collision.
+- Guarded Missiles are controlled by the Player that fires them. The player will enter missile view, directly controlling the missile using an attached camera.
+- Swarm Missiles detonate when in vicinity to a potential collision, launching multiple Child-Missiles in RPG Mode (extremely good for Air to Ground).
+
+For now Missiles use global objects. This is mostly for cosmetic reasons, as streamer objects stutter if constantly changing directions when moving. This also uses less resources on the server-side. Keep that in mind when changing the MAX_MISSILES limit.
 
 # Functions:
 
-- FireMissile(	Float:x, Float:y, Float:z, Float:vx, Float:vy, Float:vz, mode = MISSILE_MODE_RPG, ttl = MISSILE_TTL, Float:speed = MISSILE_SPEED, Float:step = MISSILE_STEP, Float:jitter = MISSILE_JITTER, Float:skill = MISSILE_SKILL, Float:down_force = MISSILE_DOWN_FORCE, target_type = -1, target_id = -1, Float:target_x = 0.0, Float:target_y = 0.0, Float:target_z = 0.0)
+- FireMissile(Float:x, Float:y, Float:z, Float:vx, Float:vy, Float:vz, mode = MISSILE_MODE_RPG, ttl = MISSILE_TTL, Float:speed = MISSILE_SPEED, Float:step = MISSILE_STEP, Float:jitter = MISSILE_JITTER, Float:skill = MISSILE_SKILL, Float:down_force = MISSILE_DOWN_FORCE, target_type = -1, target_id = -1, Float:target_x = 0.0, Float:target_y = 0.0, Float:target_z = 0.0)
 	
 	Launches a missile.
 	Returns Missile ID or -1 if invalid.
+	
+	ttl - Time-to-Live in ms
+	step - Step Distance (1.0 or greater recommended for fast Missiles)
+	jitter - Setting this to 0.01 will make the Missile "wobble" realistically. 0.1 or greater will make the Missile go all around the place.
+	skill - Used for Homing Missiles. 0.0 = straight line, 1.0 = instant turns.
+	down_force - Used for Artillery.
+	target_id, target_x, etc. - Depending on the target_type these have to be filled accordingly.
 
 - IsValidMissile(id)
 	
@@ -38,3 +42,7 @@ Fires a swarm missile, it detonates when close to any collision, launching multi
 - DestroyMissile(id)
 
 	Destroys the specified Missile ID without detonating.
+	
+- ProcessMissile(id)
+
+	Moves the Missile's Object to the next step. Does not need to be called at all unless the Missile was stopped.
