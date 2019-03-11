@@ -1,4 +1,4 @@
-#CAMissiles Include (c) 2017-2019 NaS
+# CAMissiles Include (c) 2017-2019 NaS
 
 This include adds Missiles that can be fired by the script.
 
@@ -14,7 +14,7 @@ There are various modes which can be chosen:
 - Swarm 		Fires a swarm missile, it detonates when close to any collision, launching
 				multiple RPGs in random directions (extremely good for Air to Ground)
 
-#Functions:
+# Functions:
 
 - FireMissile(	Float:x, Float:y, Float:z, // Position
 				Float:vx, Float:vy, Float:vz,  // Vector (does not need to be normalized)
