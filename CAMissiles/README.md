@@ -3,16 +3,16 @@
 This include adds Missiles that can be fired by the script.
 
 There are various modes which can be chosen:
-- Artillery 		Fires a gravity-affected projectile that explodes on impact
-- RPG 			Fires an RPG projectile that travels in a straight line.
-- Homing 		Fires a homing missile at a certain target.
-				Targets can be Positions, (Dyn.-/Pl.-)Objects, Players and Vehicles.
-				Scripts can update the target position manually which (for example) could
-				be used for a HL2-like guarded missile.
-- Guarded 		Fires a guarded missile. Must be fired by a player. The player will enter
-				missile view, directly controlling the missile.
-- Swarm 		Fires a swarm missile, it detonates when close to any collision, launching
-				multiple RPGs in random directions (extremely good for Air to Ground)
+- Artillery 		
+Fires a gravity-affected projectile that explodes on impact
+- RPG
+Fires an RPG projectile that travels in a straight line.
+- Homing
+Fires a homing missile at a certain target. Targets can be Positions, (Dyn.-/Pl.-)Objects, Players and Vehicles. Scripts can update the target position manually which (for example) could be used for a HL2-like guarded missile.
+- Guarded
+Fires a guarded missile. Must be fired by a player. The player will enter missile view, directly controlling the missile.
+- Swarm
+Fires a swarm missile, it detonates when close to any collision, launching multiple RPGs in random directions (extremely good for Air to Ground)
 
 # Functions:
 
