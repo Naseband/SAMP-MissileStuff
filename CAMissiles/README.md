@@ -16,18 +16,7 @@ There are various modes which can be chosen:
 
 # Functions:
 
-- FireMissile(	Float:x, Float:y, Float:z, // Position
-				Float:vx, Float:vy, Float:vz,  // Vector (does not need to be normalized)
-				mode = MISSILE_MODE_RPG, // Missile Mode
-				ttl = MISSILE_TTL, // Missile time-to-live (in ms)
-				Float:speed = MISSILE_SPEED,  // Missile Speed
-				Float:step = MISSILE_STEP, // Missile Step Size
-				Float:jitter = MISSILE_JITTER, // Missile Jitter
-				Float:skill = MISSILE_SKILL, // Missile Skill (0.0 - 1.0, 0.0 = RPG, 1.0 = instant turns) for HOMING
-				Float:down_force = MISSILE_DOWN_FORCE, // Missile Gravity for ARTILLERY
-				target_type = -1,
-				target_id = -1,
-				Float:target_x = 0.0, Float:target_y = 0.0, Float:target_z = 0.0)
+- FireMissile(	Float:x, Float:y, Float:z, Float:vx, Float:vy, Float:vz, mode = MISSILE_MODE_RPG, ttl = MISSILE_TTL, Float:speed = MISSILE_SPEED, Float:step = MISSILE_STEP, Float:jitter = MISSILE_JITTER, Float:skill = MISSILE_SKILL, Float:down_force = MISSILE_DOWN_FORCE, target_type = -1, target_id = -1, Float:target_x = 0.0, Float:target_y = 0.0, Float:target_z = 0.0)
 	
 	Launches a missile.
 	Returns Missile ID or -1 if invalid.
