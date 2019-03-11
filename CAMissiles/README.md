@@ -3,11 +3,16 @@
 This include adds Missiles that can be fired by the script.
 
 There are various modes which can be chosen:
-- Artillery fires a gravity-affected projectile that explodes on impact.
-- RPG Missiles travel in a straight line until they collide.
-- Homing Missiles follow a target until they collide with the world or get close enough. Targets can be Positions, (Dyn.-/Pl.-)Objects, Players and Vehicles. Scripts can update the target position manually which (for example) could be used for a HL2-like guarded missile. For AA Missiles a speed for 90.0 or greater is recommended, unless you want Players to be able to evade them with a fast airplane. Homing Missiles will activate tracking 700 ms after launch to avoid an early collision.
-- Guarded Missiles are controlled by the Player that fires them. The player will enter missile view, directly controlling the missile using an attached camera.
-- Swarm Missiles detonate when in vicinity to a potential collision, launching multiple Child-Missiles in RPG Mode (extremely good for Air to Ground).
+- MISSILE_MODE_ARTILLERY
+Fires a gravity-affected projectile that explodes on impact.
+- MISSILE_MODE_RPG
+RPG Missiles travel in a straight line until they collide.
+- MISSILE_MODE_HOMING
+Homing Missiles follow a target until they collide with the world or get close enough. Targets can be Positions, (Dyn.-/Pl.-)Objects, Players and Vehicles. Scripts can update the target position manually which (for example) could be used for a HL2-like guarded missile. For AA Missiles a speed for 90.0 or greater is recommended, unless you want Players to be able to evade them with a fast airplane. Homing Missiles will activate tracking 700 ms after launch to avoid an early collision.
+- MISSILE_MODE_GUARDED (Not yet implemented)
+Guarded Missiles are controlled by the Player that fires them. The player will enter missile view, directly controlling the missile using an attached camera.
+- MISSILE_MODE_SWARM
+Swarm Missiles detonate when in vicinity to a potential collision, launching multiple Child-Missiles in RPG Mode (extremely good for Air to Ground).
 
 For now Missiles use global objects. This is mostly for cosmetic reasons, as streamer objects stutter if constantly changing directions when moving. This also uses less resources on the server-side. Keep that in mind when changing the MAX_MISSILES limit.
 
@@ -19,10 +24,15 @@ For now Missiles use global objects. This is mostly for cosmetic reasons, as str
 	Returns Missile ID or -1 if invalid.
 	
 	ttl - Time-to-Live in ms
+
 	step - Step Distance (1.0 or greater recommended for fast Missiles)
+
 	jitter - Setting this to 0.01 will make the Missile "wobble" realistically. 0.1 or greater will make the Missile go all around the place.
+
 	skill - Used for Homing Missiles. 0.0 = straight line, 1.0 = instant turns.
-	down_force - Used for Artillery.
+
+	down_force - Used for Artillery. 
+
 	target_id, target_x, etc. - Depending on the target_type these have to be filled accordingly.
 
 - IsValidMissile(id)
