@@ -16,7 +16,7 @@ There are two types of SAM Turrets:
 	
 	Returns the SAM ID if successful, otherwise -1.
 	
-	Note: modelid must be predefined in the include, otherwise the missile will spawn at the object's origin.
+	Note: modelid must be predefined in the include, otherwise the missile will spawn at the object's origin (see GetSAMTurretBarrelPos).
 
 - IsValidSAMTurret(id)
 
