@@ -84,7 +84,7 @@ enum E_MISSILE
 	misTargetID,
 	Float:misTargetPos[3]
 };
-new static g_Missiles[MAX_MISSILES][E_MISSILE];
+new static gMissiles[MAX_MISSILES][E_MISSILE];
 
 new static bool:gCAMissilesInit = false;
 
@@ -192,7 +192,7 @@ public OnGameModeExit()
 public OnObjectMoved(objectid)
 {
 	new id = -1;
-	for(new i = 0; i < MAX_MISSILES; i ++) if(g_Missiles[i][misUsed] && g_Missiles[i][misObjectID] == objectid)
+	for(new i = 0; i < MAX_MISSILES; i ++) if(gMissiles[i][misUsed] && gMissiles[i][misObjectID] == objectid)
 	{
 	    id = i;
 	    break;
@@ -228,9 +228,9 @@ static stock MISS_Init()
 
 	for(new i = 0; i < MAX_MISSILES; i ++)
 	{
-	    g_Missiles[i][misUsed] = false;
+	    gMissiles[i][misUsed] = false;
 
-	    g_Missiles[i][misObjectID] = -1;
+	    gMissiles[i][misObjectID] = -1;
 	}
 
 	gCAMissilesInit = true;
@@ -268,7 +268,7 @@ stock FireMissile(Float:x, Float:y, Float:z, // Position
 
 	new id = -1;
 
-	for(new i = 0; i < MAX_MISSILES; i ++) if(!g_Missiles[i][misUsed])
+	for(new i = 0; i < MAX_MISSILES; i ++) if(!gMissiles[i][misUsed])
 	{
 		id = i;
 		break;
@@ -280,35 +280,35 @@ stock FireMissile(Float:x, Float:y, Float:z, // Position
 
 	if(VectorSize(vx, vy, vz) == 0.0) return -1;
 
-	g_Missiles[id][misMode] = mode;
-	g_Missiles[id][misTTL] = ttl;
+	gMissiles[id][misMode] = mode;
+	gMissiles[id][misTTL] = ttl;
 
-	g_Missiles[id][misX] = x;
-	g_Missiles[id][misY] = y;
-	g_Missiles[id][misZ] = z;
+	gMissiles[id][misX] = x;
+	gMissiles[id][misY] = y;
+	gMissiles[id][misZ] = z;
 
-	g_Missiles[id][misVX] = vx;
-	g_Missiles[id][misVY] = vy;
-	g_Missiles[id][misVZ] = vz;
+	gMissiles[id][misVX] = vx;
+	gMissiles[id][misVY] = vy;
+	gMissiles[id][misVZ] = vz;
 
-	g_Missiles[id][misSpeed] = speed;
-	g_Missiles[id][misStep] = step;
-	g_Missiles[id][misJitter] = jitter;
-	g_Missiles[id][misSkill] = skill;
-	g_Missiles[id][misDownForce] = down_force;
+	gMissiles[id][misSpeed] = speed;
+	gMissiles[id][misStep] = step;
+	gMissiles[id][misJitter] = jitter;
+	gMissiles[id][misSkill] = skill;
+	gMissiles[id][misDownForce] = down_force;
 
-	g_Missiles[id][misTargetType] = target_type;
-	g_Missiles[id][misTargetID] = target_id,
-	g_Missiles[id][misTargetPos][0] = target_x;
-	g_Missiles[id][misTargetPos][1] = target_y;
-	g_Missiles[id][misTargetPos][2] = target_z;
+	gMissiles[id][misTargetType] = target_type;
+	gMissiles[id][misTargetID] = target_id,
+	gMissiles[id][misTargetPos][0] = target_x;
+	gMissiles[id][misTargetPos][1] = target_y;
+	gMissiles[id][misTargetPos][2] = target_z;
 
-	g_Missiles[id][misObjectID] = CreateObject(MISSILE_MODEL, x, y, z, cmiss_RetRXFromVectorZ(vz), 0.0, cmiss_RetRZFromVectorXY(vx, vy), 900.0);
+	gMissiles[id][misObjectID] = CreateObject(MISSILE_MODEL, x, y, z, cmiss_RetRXFromVectorZ(vz), 0.0, cmiss_RetRZFromVectorXY(vx, vy), 900.0);
 
-	if(!IsValidObject(g_Missiles[id][misObjectID])) return -1;
+	if(!IsValidObject(gMissiles[id][misObjectID])) return -1;
 
-	g_Missiles[id][misUsed] = true;
-	g_Missiles[id][misSpawnTick] = GetTickCount();
+	gMissiles[id][misUsed] = true;
+	gMissiles[id][misSpawnTick] = GetTickCount();
 
 	ProcessMissile(id);
 
@@ -317,7 +317,7 @@ stock FireMissile(Float:x, Float:y, Float:z, // Position
 
 stock IsValidMissile(id)
 {
-	if(id < 0 || id >= MAX_MISSILES || !g_Missiles[id][misUsed]) return 0;
+	if(id < 0 || id >= MAX_MISSILES || !gMissiles[id][misUsed]) return 0;
 
 	return 1;
 }
@@ -326,7 +326,7 @@ stock IsValidMissileObject(id)
 {
 	if(!IsValidMissile(id)) return 0;
 
-	if(!IsValidObject(g_Missiles[id][misObjectID])) return 0;
+	if(!IsValidObject(gMissiles[id][misObjectID])) return 0;
 
 	return 1;
 }
@@ -335,12 +335,12 @@ stock ExplodeMissile(id)
 {
 	if(!IsValidMissile(id)) return 0;
 
-	switch(g_Missiles[id][misMode])
+	switch(gMissiles[id][misMode])
 	{
 		case MISSILE_MODE_SWARM:
 		{
-			new Float:x = g_Missiles[id][misX], Float:y = g_Missiles[id][misY], Float:z = g_Missiles[id][misZ],
-				Float:vx = g_Missiles[id][misVX], Float:vy = g_Missiles[id][misVY], Float:vz = g_Missiles[id][misVZ];
+			new Float:x = gMissiles[id][misX], Float:y = gMissiles[id][misY], Float:z = gMissiles[id][misZ],
+				Float:vx = gMissiles[id][misVX], Float:vy = gMissiles[id][misVY], Float:vz = gMissiles[id][misVZ];
 
 			CreateExplosion(x, y, z, 10, 15.0);
 
@@ -354,7 +354,7 @@ stock ExplodeMissile(id)
 
 		default:
 		{
-			CreateExplosion(g_Missiles[id][misX], g_Missiles[id][misY], g_Missiles[id][misZ], 10, 25.0);
+			CreateExplosion(gMissiles[id][misX], gMissiles[id][misY], gMissiles[id][misZ], 10, 25.0);
 
 			DestroyMissile(id);
 		}
@@ -371,11 +371,11 @@ stock DestroyMissile(id)
 
 	if(IsValidMissileObject(id))
 	{
-		DestroyObject(g_Missiles[id][misObjectID]);
-		g_Missiles[id][misObjectID] = -1;
+		DestroyObject(gMissiles[id][misObjectID]);
+		gMissiles[id][misObjectID] = -1;
 	}
 
-	g_Missiles[id][misUsed] = false;
+	gMissiles[id][misUsed] = false;
 
 	return 1;
 }
@@ -389,27 +389,27 @@ stock DestroyAllMissiles()
 
 stock ProcessMissile(id)
 {
-	if(GetTickCount() - g_Missiles[id][misSpawnTick] > g_Missiles[id][misTTL])
+	if(GetTickCount() - gMissiles[id][misSpawnTick] > gMissiles[id][misTTL])
 	{
 		ExplodeMissile(id);
 
 		return 1;
 	}
 
-	new Float:x = g_Missiles[id][misX], Float:y = g_Missiles[id][misY], Float:z = g_Missiles[id][misZ],
+	new Float:x = gMissiles[id][misX], Float:y = gMissiles[id][misY], Float:z = gMissiles[id][misZ],
 		Float:ox = x, Float:oy = y, Float:oz = z,
-		Float:vx = g_Missiles[id][misVX], Float:vy = g_Missiles[id][misVY], Float:vz = g_Missiles[id][misVZ],
-		mode = g_Missiles[id][misMode],
-		Float:speed = g_Missiles[id][misSpeed],
-		Float:skill = g_Missiles[id][misSkill],
-		Float:step = g_Missiles[id][misStep],
-		Float:jitter = g_Missiles[id][misJitter];
+		Float:vx = gMissiles[id][misVX], Float:vy = gMissiles[id][misVY], Float:vz = gMissiles[id][misVZ],
+		mode = gMissiles[id][misMode],
+		Float:speed = gMissiles[id][misSpeed],
+		Float:skill = gMissiles[id][misSkill],
+		Float:step = gMissiles[id][misStep],
+		Float:jitter = gMissiles[id][misJitter];
 
 	switch(mode)
 	{
 		case MISSILE_MODE_ARTILLERY:
 		{
-			vz -= g_Missiles[id][misDownForce];
+			vz -= gMissiles[id][misDownForce];
 
 			if(jitter > 0.0)
 			{
@@ -431,10 +431,10 @@ stock ProcessMissile(id)
 
 		case MISSILE_MODE_HOMING:
 		{
-			new target_type = g_Missiles[id][misTargetType], target_id = g_Missiles[id][misTargetID],
+			new target_type = gMissiles[id][misTargetType], target_id = gMissiles[id][misTargetID],
 				Float:dx = vx, Float:dy = vy, Float:dz = vz;
 
-			if(GetTickCount() - g_Missiles[id][misSpawnTick] > 700)
+			if(GetTickCount() - gMissiles[id][misSpawnTick] > 700)
 			{
 				switch(target_type)
 				{
@@ -480,9 +480,9 @@ stock ProcessMissile(id)
 					}
 					case MISSILE_TARGET_POS:
 					{
-						dx = g_Missiles[id][misTargetPos][0] - x;
-						dy = g_Missiles[id][misTargetPos][1] - y;
-						dz = g_Missiles[id][misTargetPos][2] - z;
+						dx = gMissiles[id][misTargetPos][0] - x;
+						dy = gMissiles[id][misTargetPos][1] - y;
+						dz = gMissiles[id][misTargetPos][2] - z;
 
 						if(VectorSize(dx, dy, dz) < 3.0)
 						{
@@ -529,11 +529,11 @@ stock ProcessMissile(id)
 	{
 		case MISSILE_MODE_SWARM:
 		{
-			if(GetTickCount() - g_Missiles[id][misSpawnTick] > 1500 && CA_ContactTest(13592, x, y, z, 0.0, 0.0, 0.0))
+			if(GetTickCount() - gMissiles[id][misSpawnTick] > 1500 && CA_ContactTest(13592, x, y, z, 0.0, 0.0, 0.0))
 			{
-				g_Missiles[id][misX] = x;
-				g_Missiles[id][misY] = y;
-				g_Missiles[id][misZ] = z;
+				gMissiles[id][misX] = x;
+				gMissiles[id][misY] = y;
+				gMissiles[id][misZ] = z;
 
 				ExplodeMissile(id);
 
@@ -544,24 +544,24 @@ stock ProcessMissile(id)
 
 	if(CA_RayCastLine(ox, oy, oz, x, y, z, x, y, z) != 0)
 	{
-		g_Missiles[id][misX] = x;
-		g_Missiles[id][misY] = y;
-		g_Missiles[id][misZ] = z;
+		gMissiles[id][misX] = x;
+		gMissiles[id][misY] = y;
+		gMissiles[id][misZ] = z;
 
 		ExplodeMissile(id);
 
 		return 1;
 	}
 
-	g_Missiles[id][misX] = x;
-	g_Missiles[id][misY] = y;
-	g_Missiles[id][misZ] = z;
-	g_Missiles[id][misVX] = vx;
-	g_Missiles[id][misVY] = vy;
-	g_Missiles[id][misVZ] = vz;
+	gMissiles[id][misX] = x;
+	gMissiles[id][misY] = y;
+	gMissiles[id][misZ] = z;
+	gMissiles[id][misVX] = vx;
+	gMissiles[id][misVY] = vy;
+	gMissiles[id][misVZ] = vz;
 
-	SetObjectRot(g_Missiles[id][misObjectID], cmiss_RetRXFromVectorZ(vz), 0.0, cmiss_RetRZFromVectorXY(vx, vy));
-	MoveObject(g_Missiles[id][misObjectID], x, y, z, speed);
+	SetObjectRot(gMissiles[id][misObjectID], cmiss_RetRXFromVectorZ(vz), 0.0, cmiss_RetRZFromVectorXY(vx, vy));
+	MoveObject(gMissiles[id][misObjectID], x, y, z, speed);
 
 	return 1;
 }
