@@ -12,9 +12,11 @@ There are two types of SAM Turrets:
 
 - CreateSAMTurret(type, modelid, interval, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz, Float:min_z, Float:max_z, Float:range = 100.0, Float:speed = 30.0, Float:skill = 0.4, bool:can_rotate = true, Float:rot_speed = SAM_TURRET_ROT_SPEED, virtual_world = 0, interior = 0)
 	
-	Creates a SAM Turrets.
+	Creates a SAM Turret.
+	
 	Returns the SAM ID if successful, otherwise -1.
-	Note: modelid must be predefined, otherwise the missile will spawn at the object's origin.
+	
+	Note: modelid must be predefined in the include, otherwise the missile will spawn at the object's origin.
 
 - IsValidSAMTurret(id)
 
@@ -44,30 +46,37 @@ There are two types of SAM Turrets:
 - Float:RotateSAMTurret(id, Float:rz)
 
 	Rotates a SAM Turret to the specified angle.
+	
 	Returns the current angle difference (0.0 if already rotated).
 
 - Float:RotateSAMTurretTo(id, Float:x, Float:y, Float:z)
 
 	Rotates a SAM Turret towards a point.
+	
 	Returns the current angle difference (0.0 if already rotated).
 
 - FireSAMTurret(id, targetid)
 
 	Fires a Missile from specified Turret.
+	
 	targetid's type depends on the SAM Turret Type, currently only occupied vehicles can be tracked.
+	
 	Note: ignores target distance, rotation and firerate.
 
 - FindSAMTurretTarget(id)
 
 	Scans for a new target and updates the Turret's State if found.
+	
 	Returns 1 on success, 0 otherwise.
 
 - SetSAMTurretHostileState(id, playerid, hostile_state)
 
 	Set a Turret's Hostile State towards a player.
+	
 	Use playerid = -1 to apply for all players.
 
 - GetSAMTurretHostileState(id, playerid)
 
 	Gets a Turret's Hostile State towards a player.
+	
 	Returns 1 if hostile, 0 otherwise.
