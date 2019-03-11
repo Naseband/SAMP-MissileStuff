@@ -33,15 +33,19 @@ For now Missiles use global objects. This is mostly for cosmetic reasons, as str
 	Launches a missile.
 	Returns Missile ID or -1 if invalid.
 	
+	mode - Missile Mode (see above)
+	
 	ttl - Time-to-Live in ms
+	
+	speed - Missile Speed in m/s
 
-	step - Step Distance (1.0 or greater recommended for fast Missiles)
+	step - Step Distance in m (1.5 or greater recommended for fast Missiles)
 
-	jitter - Setting this to 0.01 will make the Missile "wobble" slightly. 0.1 or greater will make the Missile go all around the place.
+	jitter - Missile Jitter in m/step. Setting this to 0.01 will make the Missile "wobble" slightly. 0.1 or greater will make the Missile go all around the place.
 
-	skill - Used for Homing Missiles. 0.0 = straight line, 1.0 = instant turns.
+	skill - Used for Homing Missiles. 0.0 = tracking has no effect, 1.0 = instant turns.
 
-	down_force - Used for Artillery.
+	down_force - Used for Artillery in m/step.
 
 	target_id, target_x, etc. - Used for Homing Missiles. Depending on the target_type these have to be filled accordingly.
 
