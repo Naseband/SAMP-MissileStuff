@@ -43,7 +43,7 @@ For now Missiles use global objects. This is mostly for cosmetic reasons, as str
 
 	jitter - Missile Jitter in m/step. Setting this to 0.01 will make the Missile "wobble" slightly. 0.1 or greater will make the Missile go all around the place.
 
-	skill - Used for Homing Missiles. 0.0 = tracking has no effect, 1.0 = instant turns.
+	skill - Used for Homing Missiles and Guarded Missiles. 0.0 = tracking has no effect, 1.0 = instant turns. For Guarded Missiles this describes the minimum turning angle.
 
 	down_force - Used for Artillery in m/step.
 
