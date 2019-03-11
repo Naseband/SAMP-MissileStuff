@@ -37,13 +37,13 @@ For now Missiles use global objects. This is mostly for cosmetic reasons, as str
 
 	step - Step Distance (1.0 or greater recommended for fast Missiles)
 
-	jitter - Setting this to 0.01 will make the Missile "wobble" realistically. 0.1 or greater will make the Missile go all around the place.
+	jitter - Setting this to 0.01 will make the Missile "wobble" slightly. 0.1 or greater will make the Missile go all around the place.
 
 	skill - Used for Homing Missiles. 0.0 = straight line, 1.0 = instant turns.
 
-	down_force - Used for Artillery. 
+	down_force - Used for Artillery.
 
-	target_id, target_x, etc. - Depending on the target_type these have to be filled accordingly.
+	target_id, target_x, etc. - Used for Homing Missiles. Depending on the target_type these have to be filled accordingly.
 
 - IsValidMissile(id)
 	
