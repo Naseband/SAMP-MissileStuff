@@ -344,10 +344,10 @@ stock ExplodeMissile(id)
 
 			CreateExplosion(x, y, z, 10, 15.0);
 
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 0.5, 0.2);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 0.5, 0.2);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 0.5, 0.2);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 0.5, 0.2);
+			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 1.0, 0.02);
+			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 1.0, 0.02);
+			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 1.0, 0.02);
+			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 1.0, 0.02);
 
 			DestroyMissile(id);
 		}
