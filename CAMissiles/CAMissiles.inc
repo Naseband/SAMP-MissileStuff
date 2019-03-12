@@ -45,7 +45,9 @@ enum (+=1)
 	MISSILE_MODE_RPG,
 	MISSILE_MODE_HOMING,
 	MISSILE_MODE_GUARDED,
-	MISSILE_MODE_SWARM
+	MISSILE_MODE_SWARM,
+
+	MISSILE_MODE_MAX
 };
 
 enum (+=1)
@@ -92,8 +94,7 @@ new static bool:gCAMissilesInit = false;
 
 forward Float:cmiss_RetRZFromVectorXY(Float:vx, Float:vy);
 forward Float:cmiss_RetRXFromVectorZ(Float:vz);
-forward Float:cmiss_frandom(Float:range);
-forward Float:cmiss_frandomEx(Float:rmin, Float:rmax);
+forward Float:cmiss_frandomEx(Float:min, Float:max = (Float:0x7FFFFFFF), dp = 2);
 
 // ---------------------------------------------------------- Hooks
 
@@ -226,12 +227,6 @@ static stock MISS_Init()
 {
 	if(gCAMissilesInit) return 0;
 
-	for(new i = 0; i < MAX_MISSILES; i ++)
-	{
-	    gMissiles[i][misUsed] = false;
-
-	    gMissiles[i][misObjectID] = -1;
-	}
 
 	gCAMissilesInit = true;
 
@@ -340,14 +335,16 @@ stock ExplodeMissile(id)
 		case MISSILE_MODE_SWARM:
 		{
 			new Float:x = gMissiles[id][misX], Float:y = gMissiles[id][misY], Float:z = gMissiles[id][misZ],
-				Float:vx = gMissiles[id][misVX], Float:vy = gMissiles[id][misVY], Float:vz = gMissiles[id][misVZ];
+				Float:vx = gMissiles[id][misVX], Float:vy = gMissiles[id][misVY], Float:vz = gMissiles[id][misVZ],
+				Float:speed = gMissiles[id][misSpeed],
+				Float:step = gMissiles[id][misStep];
 
-			CreateExplosion(x, y, z, 10, 15.0);
+			CreateExplosion(x, y, z, 12, 5.0);
 
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 1.0, 0.02);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 1.0, 0.02);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 1.0, 0.02);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 7000, MISSILE_SPEED, 1.0, 0.02);
+			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 4000, speed, step, 0.01);
+			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 4000, speed, step, 0.01);
+			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 4000, speed, step, 0.01);
+			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 4000, speed, step, 0.01);
 
 			DestroyMissile(id);
 		}
@@ -598,14 +595,29 @@ stock static cmiss_randomEx(rmin, rmax)
 	return (rmin + random(rmax - rmin));
 }
 
-stock static Float:cmiss_frandom(Float:range)
+stock static Float:cmiss_frandomEx(Float:min, Float:max = (Float:0x7FFFFFFF), dp = 2)
 {
-	return (float(random(floatround(range * 1000.0))) / 1000.0);
-}
-
-stock static Float:cmiss_frandomEx(Float:rmin, Float:rmax)
-{
-	return (rmin + cmiss_frandom(rmax - rmin));
+    new
+        Float:mul = floatpower(10.0, float(dp));
+    switch (dp)
+    {
+    case 0: mul = 1.0;
+    case 1: mul = 10.0;
+    case 2: mul = 100.0;
+    case 3: mul = 1000.0;
+    default: mul = floatpower(10.0, float(dp));
+    }
+    if (max != max)
+    {
+        if (min < 0.0)
+            return -(float(random(floatround(-min * mul))) / mul);
+        return float(random(floatround(min * mul))) / mul;
+    }
+    // Parameters are the wrong way around - do it anyway.
+    if (max < min)
+        return float(random(floatround(min * mul - max * mul))) / mul + max;
+    // NOT a silly check - "IsNaN".
+    return float(random(floatround(max * mul - min * mul))) / mul + min;
 }
 
 // ----------------------------------------------------------
