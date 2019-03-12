@@ -1,4 +1,4 @@
-# CAMissiles Include (c) 2017-2019 NaS
+# CAMissiles Include by NaS
 
 This include adds Missiles that can be fired by the script.
 
