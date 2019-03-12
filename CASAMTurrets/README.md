@@ -1,4 +1,4 @@
-# CASAMTurrets Include (c) 2017-2019 NaS
+# CASAMTurrets Include by NaS
 
 This include adds SAM Turrets for CAMissiles.
 SAM Turrets will shoot hostile players in range with homing missiles.
