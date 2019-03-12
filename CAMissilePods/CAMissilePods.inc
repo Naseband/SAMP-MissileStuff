@@ -333,7 +333,7 @@ stock AttachMissilePodToVehicle(id, vehicleid, Float:x, Float:y, Float:z, Float:
 
 	if(IsValidDynamicObject(objectid)) DestroyDynamicObject(objectid);
 
-	objectid = CreateDynamicObject(gMissilePods[id][mpodModelID], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, gMissilePods[id][mpodVirtualWorld], gMissilePods[id][mpodInterior], -1, 150.0, 150.0);
+	objectid = CreateDynamicObject(gMissilePods[id][mpodModelID], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, virtual_world, interior, -1, 150.0, 150.0);
 
 	gMissilePods[id][mpodObjectID] = objectid;
 	gMissilePods[id][mpodVirtualWorld] = virtual_world;
@@ -431,11 +431,6 @@ stock GetMissilePodAmmo(id)
 	return gMissilePods[id][mpodMissileAmmo];
 }
 
-stock GetMissilePodCapacity(id)
-{
-	return gMissilePods[id][mpodMissileCapacity];
-}
-
 stock SetMissilePodAmmo(id, missile_ammo)
 {
 	if(missile_ammo < 0) gMissilePods[id][mpodMissileAmmo] = 0;
@@ -443,6 +438,11 @@ stock SetMissilePodAmmo(id, missile_ammo)
 	else gMissilePods[id][mpodMissileAmmo] = missile_ammo;
 
 	return 1;
+}
+
+stock GetMissilePodCapacity(id)
+{
+	return gMissilePods[id][mpodMissileCapacity];
 }
 
 stock SetMissilePodCapacity(id, missile_capacity)
@@ -457,10 +457,7 @@ stock SetMissilePodCapacity(id, missile_capacity)
 
 stock GiveMissilePodAmmo(id, missile_ammo)
 {
-	gMissilePods[id][mpodMissileAmmo] += missile_ammo;
-
-	if(gMissilePods[id][mpodMissileAmmo] < 0) gMissilePods[id][mpodMissileAmmo] = 0;
-	else if(missile_ammo > gMissilePods[id][mpodMissileCapacity]) gMissilePods[id][mpodMissileAmmo] = gMissilePods[id][mpodMissileCapacity];
+	SetMissilePodAmmo(id, gMissilePods[id][mpodMissileAmmo] + missile_ammo);
 
 	return 1;
 }
