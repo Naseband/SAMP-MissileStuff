@@ -21,8 +21,11 @@
 #define SAM_TURRET_EXTRA_ID			15000000 // Streamer Item Extra Array ID (slot 0)
 #endif
 
+// Plays this sound if a SAM Turret fires a missile, set to 0 to disable.
+// Everyone in the target vehicle will hear it, giving passengers the chance to bail etc.
+
 #if !defined SAM_TURRET_WARNING_SOUND
-#define SAM_TURRET_WARNING_SOUND	5201 // Plays this sound if a SAM Turret fires a missile, set to 0 to disable
+#define SAM_TURRET_WARNING_SOUND	5201
 #endif
 
 // ----------------------------------------------------------------------------------------- Main Data
