@@ -5,7 +5,7 @@
 
 // ---------------------------------------------------------- Config/Limits
 
-#define MAX_MISSILE_PODS			100
+#define MAX_MISSILE_PODS			10
 
 // ---------------------------------------------------------- Modes, Types, etc
 
@@ -20,19 +20,15 @@ enum E_MISSILE_POD_M_INFO
 {
 	mpinfoModelID,			// Model ID to match
 
-	Float:mpinfoLaunchX,	// Launch Position offset for the object
-	Float:mpinfoLaunchY,
-	Float:mpinfoLaunchZ,
-
 	Float:mpinfoLaunchRX,	// Launch Angle offset for the object
 	Float:mpinfoLaunchRY,
 	Float:mpinfoLaunchRZ
 };
 new gMissilePodModelInfo[][E_MISSILE_POD_M_INFO] = 
 {
-	{3790, 	0.0, 0.0, 0.0,	0.0, 0.0, -270.0}, // Small Missile 
-	{3786, 	0.0, 0.0, 0.0,	0.0, 0.0, -270.0}, // Medium Missile
-	{1636, 	0.0, 0.0, 0.0,	270.0, 0.0, 0.0} // Bomb
+	{3790, 	0.0, 0.0, 90.0}, // Small Missile 
+	{3786, 	0.0, 0.0, 90.0}, // Medium Missile
+	{1636, 	270.0, 0.0, 0.0} // Bomb
 };
 
 enum E_MISSILE_POD
@@ -191,7 +187,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 			}
 		}
 
-		if(podid != -1) FireMissilePod(podid);
+		if(podid != -1) FireMissilePod(podid, .extra = playerid);
 	}
 
 	
@@ -356,7 +352,7 @@ stock AttachMissilePodToVehicle(id, vehicleid, Float:x, Float:y, Float:z, Float:
 
 // -----------------
 
-stock FireMissilePod(id, target_type = -1, target_id = -1, Float:target_x = 0.0, Float:target_y = 0.0, Float:target_z = 0.0)
+stock FireMissilePod(id, target_type = -1, target_id = -1, Float:target_x = 0.0, Float:target_y = 0.0, Float:target_z = 0.0, extra = cellmin)
 {
 	if(!IsValidMissilePod(id) || !gMissilePods[id][mpodVehicleID]) return 0;
 
@@ -374,16 +370,23 @@ stock FireMissilePod(id, target_type = -1, target_id = -1, Float:target_x = 0.0,
 
 	if(model_type != -1)
 	{
-		att_x += gMissilePodModelInfo[model_type][mpinfoLaunchX];
-		att_y += gMissilePodModelInfo[model_type][mpinfoLaunchY];
-		att_z += gMissilePodModelInfo[model_type][mpinfoLaunchZ];
 		att_rx += gMissilePodModelInfo[model_type][mpinfoLaunchRX];
 		att_ry += gMissilePodModelInfo[model_type][mpinfoLaunchRY];
 		att_rz += gMissilePodModelInfo[model_type][mpinfoLaunchRZ];
+
+		if(gMissilePodModelInfo[model_type][mpinfoLaunchRZ] == 90.0 || gMissilePodModelInfo[model_type][mpinfoLaunchRZ] == 270.0)
+		{
+			new Float:w = att_rx;
+			att_rx = att_ry;
+			att_ry = w;
+		}
 	}
 
 	GetVehicleObjectPositionWorld(vid, att_x, att_y, att_z, att_rx, att_ry, att_rz, x, y, z, rx, ry, rz);
 	GetRotationMatrixFromEuler(matrix, rx, ry, rz, euler_samp);
+
+	//RotMatrixEulerAroundPoint(matrix, 0.0, 0.0, 0.0, gMissilePodModelInfo[model_type][mpinfoLaunchRX], gMissilePodModelInfo[model_type][mpinfoLaunchRY], gMissilePodModelInfo[model_type][mpinfoLaunchRZ]);
+
 	MatrixRotate(matrix, 0.0, 1.0, 0.0, 0.0, vx, vy, vz);
 
 	FireMissile(x, y, z, vx, vy, vz,
@@ -394,7 +397,7 @@ stock FireMissilePod(id, target_type = -1, target_id = -1, Float:target_x = 0.0,
 				gMissilePods[id][mpodMissileJitter],
 				gMissilePods[id][mpodMissileSkill],
 				gMissilePods[id][mpodMissileDownForce],
-				target_type, target_id, target_x, target_y, target_z);
+				target_type, target_id, target_x, target_y, target_z, .extra = extra);
 
 	gMissilePods[id][mpodLastFireTS] = GetTickCount();
 
@@ -462,6 +465,31 @@ stock GiveMissilePodAmmo(id, missile_ammo)
 	return 1;
 }
 
-// -----------------
+// ----------------- Util
+
+stock static NormalizeRotation(&Float:r1, &Float:r2 = 0.0, &Float:r3 = 0.0)
+{
+	if(r1 == r1)
+	{
+		while(r1 < 0.0) r1 += 360.0;
+		while(r1 >= 360.0) r1 -= 360.0;
+	}
+	
+	if(r2 == r2)
+	{
+		while(r2 < 0.0) r2 += 360.0;
+		while(r2 >= 360.0) r2 -= 360.0;
+	}
+
+	if(r3 == r3)
+	{
+		while(r3 < 0.0) r3 += 360.0;
+		while(r3 >= 360.0) r3 -= 360.0;
+	}
+
+	//printf("r1: %f r2: %f r3: %f", r1, r2, r3);
+
+	return 1;
+}
 
 // EOF
