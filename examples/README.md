@@ -27,11 +27,12 @@ It has RPG Missiles, Swarm Missiles and Bombs that can be fired by the pilot of 
 
 # AAtest.pwn
 
-Test script for Anti-Aircraft Turrets.
+Test script for Anti-Aircraft Turrets. Additionally requires FCNPC.
 
 Commands:
 
 /a - enter turret
+
 /b - leave turret
 
-An NPC Beagle will fly around the turret.
+An NPC Beagle will fly around the turret which can be shot down.
