@@ -357,6 +357,7 @@ stock FireMissilePod(id, target_type = -1, target_id = -1, Float:target_x = 0.0,
 	if(!IsValidMissilePod(id) || !gMissilePods[id][mpodVehicleID]) return 0;
 
 	new vid = gMissilePods[id][mpodVehicleID],
+		mode = gMissilePods[id][mpodMissileMode],
 		model_type = gMissilePods[id][mpodModelType],
 		Float:att_x = gMissilePods[id][mpodAttX],
 		Float:att_y = gMissilePods[id][mpodAttY],
@@ -389,7 +390,7 @@ stock FireMissilePod(id, target_type = -1, target_id = -1, Float:target_x = 0.0,
 
 	MatrixRotate(matrix, 0.0, 1.0, 0.0, 0.0, vx, vy, vz);
 
-	FireMissile(x, y, z, vx, vy, vz,
+	FireMissile(x, y, z, gMissilePods[id][mpodVirtualWorld], gMissilePods[id][mpodInterior], vx, vy, vz,
 				gMissilePods[id][mpodMissileMode],
 				gMissilePods[id][mpodMissileTTL],
 				gMissilePods[id][mpodMissileSpeed],
@@ -487,7 +488,7 @@ stock static NormalizeRotation(&Float:r1, &Float:r2 = 0.0, &Float:r3 = 0.0)
 		while(r3 >= 360.0) r3 -= 360.0;
 	}
 
-	//printf("r1: %f r2: %f r3: %f", r1, r2, r3);
+	printf("r1: %f r2: %f r3: %f", r1, r2, r3);
 
 	return 1;
 }
