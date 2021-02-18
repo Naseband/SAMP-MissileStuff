@@ -66,10 +66,10 @@ public FCNPC_OnDeath(npcid, killerid, reason)
 
 public FCNPC_OnRespawn(npcid)
 {
-	if(npcid == NPCID)
-		FCNPC_OnSpawn(npcid);
+	FCNPC_OnSpawn(npcid);
 }
 
+forward respawn();
 public respawn()
 {
 	FCNPC_Respawn(NPCID);
@@ -110,7 +110,12 @@ CMD:b(playerid, const params[])
 
 public OnAATurretFire(id, playerid, Float:x, Float:y, Float:z, Float:vx, Float:vy, Float:vz)
 {
+	// RPG:
+
 	FireMissile(x, y, z, GetAATurretVirtualWorld(id), GetAATurretInterior(id), vx, vy, vz, MISSILE_MODE_RPG, .ttl = 3000, .speed = 80.0, .jitter = 0.0);
+	
+	// Homing Missile:
+
 	//FireMissile(x, y, z, GetAATurretVirtualWorld(id), GetAATurretInterior(id), vx, vy, vz, MISSILE_MODE_HOMING, .ttl = 3000, .speed = 80.0, .jitter = 0.0, .target_type = MISSILE_TARGET_VEHICLE, .target_id = VehicleID);
 
 	PlayerPlaySound(playerid, 17005, 0.0, 0.0, 0.0);
@@ -118,15 +123,11 @@ public OnAATurretFire(id, playerid, Float:x, Float:y, Float:z, Float:vx, Float:v
 
 public OnCAMissileExplode(id, hittype, hitid, bool:swarm, Float:x, Float:y, Float:z, virtual_world, interior)
 {
-	printf("Hittype %d id %d", hittype, hitid);
-
 	if(hittype == MISSILE_HIT_TYPE_VEHICLE)
 	{
 		if(hitid == VehicleID && !FCNPC_IsDead(NPCID))
 		{
 			SetVehicleHealth(hitid, 0.0);
-			//FCNPC_RemoveFromVehicle(NPCID);
-			//FCNPC_Kill(NPCID);
 		}
 		else
 		{
