@@ -24,3 +24,14 @@ Useful to test all different Missile Modes.
 
 By typing /cpod you can spawn a weaponized Beagle near you.
 It has RPG Missiles, Swarm Missiles and Bombs that can be fired by the pilot of the plane.
+
+# AAtest.pwn
+
+Test script for Anti-Aircraft Turrets.
+
+Commands:
+
+/a - enter turret
+/b - leave turret
+
+An NPC Beagle will fly around the turret.
