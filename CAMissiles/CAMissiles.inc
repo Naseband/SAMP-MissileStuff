@@ -37,6 +37,12 @@
 #define MISSILE_MODEL    		345 // Default Missile Model (345 = Missile)
 #endif
 
+#if !defined BOMB_MODEL
+#define BOMB_MODEL 				1636
+#endif
+
+//#define MISSILE_VEHICLE_CHECK // define this before including CAMissiles to perform vehicle hit detection (resource intensive)
+
 // ---------------------------------------------------------- Modes, Types, etc
 
 enum (+=1)
@@ -57,6 +63,14 @@ enum (+=1)
 	MISSILE_TARGET_VEHICLE
 };
 
+enum (+=1)
+{
+	MISSILE_HIT_TYPE_NONE, // Died due to TTL
+	MISSILE_HIT_TYPE_COLLISION, // Collided with world (static or dynamic CA Object)
+	MISSILE_HIT_TYPE_PLAYER,
+	MISSILE_HIT_TYPE_VEHICLE // Only available for homing missiles or if vehicle check is on
+};
+
 // ---------------------------------------------------------- Data
 
 enum E_MISSILE
@@ -66,6 +80,10 @@ enum E_MISSILE
 	misMode,
 	misSpawnTick,
 	misTTL,
+	misExtra,
+	misVirtualWorld,
+	misInterior,
+	bool:misInitCheck,
 
 	Float:misX,
 	Float:misY,
@@ -90,11 +108,15 @@ new static gMissiles[MAX_MISSILES][E_MISSILE];
 
 new static bool:gCAMissilesInit = false;
 
-// ---------------------------------------------------------- Forwarding
+// ---------------------------------------------------------- Forwarding public
+
+forward OnCAMissileExplode(id, hittype, hitid, bool:swarm, Float:x, Float:y, Float:z, virtual_world, interior);
+
+// ---------------------------------------------------------- Forwarding private
 
 forward Float:cmiss_RetRZFromVectorXY(Float:vx, Float:vy);
 forward Float:cmiss_RetRXFromVectorZ(Float:vz);
-forward Float:cmiss_frandomEx(Float:min, Float:max = (Float:0x7FFFFFFF), dp = 2);
+forward Float:cmiss_frandomEx(Float:min, Float:max = (Float:0x7FFFFFFF), dp = 3);
 
 // ---------------------------------------------------------- Hooks
 
@@ -246,7 +268,7 @@ static stock MISS_Exit()
 
 // ---------------------------------------------------------- External
 
-stock FireMissile(Float:x, Float:y, Float:z, // Position
+stock FireMissile(Float:x, Float:y, Float:z, virtual_world, interior, // Position, vw, int
 			Float:vx, Float:vy, Float:vz,  // Vector (does not need to be normalized)
 			mode = MISSILE_MODE_RPG, // Missile Mode
 			ttl = MISSILE_TTL, // Missile time-to-live (in ms)
@@ -257,7 +279,9 @@ stock FireMissile(Float:x, Float:y, Float:z, // Position
 			Float:down_force = MISSILE_DOWN_FORCE, // Missile Gravity
 			target_type = -1,
 			target_id = -1,
-			Float:target_x = 0.0, Float:target_y = 0.0, Float:target_z = 0.0)
+			Float:target_x = 0.0, Float:target_y = 0.0, Float:target_z = 0.0,
+			extra = cellmin,
+			bool:initial_check = true)
 {
 	if(!gCAMissilesInit) return -1;
 
@@ -277,10 +301,14 @@ stock FireMissile(Float:x, Float:y, Float:z, // Position
 
 	gMissiles[id][misMode] = mode;
 	gMissiles[id][misTTL] = ttl;
+	gMissiles[id][misExtra] = extra;
+	gMissiles[id][misInitCheck] = initial_check;
 
 	gMissiles[id][misX] = x;
 	gMissiles[id][misY] = y;
 	gMissiles[id][misZ] = z;
+	gMissiles[id][misVirtualWorld] = virtual_world;
+	gMissiles[id][misInterior] = interior;
 
 	gMissiles[id][misVX] = vx;
 	gMissiles[id][misVY] = vy;
@@ -298,7 +326,11 @@ stock FireMissile(Float:x, Float:y, Float:z, // Position
 	gMissiles[id][misTargetPos][1] = target_y;
 	gMissiles[id][misTargetPos][2] = target_z;
 
-	gMissiles[id][misObjectID] = CreateObject(MISSILE_MODEL, x, y, z, cmiss_RetRXFromVectorZ(vz), 0.0, cmiss_RetRZFromVectorXY(vx, vy), 900.0);
+	switch(mode)
+	{
+		case MISSILE_MODE_ARTILLERY: gMissiles[id][misObjectID] = CreateObject(BOMB_MODEL, x, y, z, cmiss_RetRXFromVectorZ(vz), 0.0, cmiss_RetRZFromVectorXY(vx, vy), 900.0);
+		default: gMissiles[id][misObjectID] = CreateObject(MISSILE_MODEL, x, y, z, cmiss_RetRXFromVectorZ(vz), 0.0, cmiss_RetRZFromVectorXY(vx, vy), 900.0);
+	}
 
 	if(!IsValidObject(gMissiles[id][misObjectID])) return -1;
 
@@ -326,7 +358,7 @@ stock IsValidMissileObject(id)
 	return 1;
 }
 
-stock ExplodeMissile(id)
+stock ExplodeMissile(id, hittype = MISSILE_HIT_TYPE_NONE, hitid = -1)
 {
 	if(!IsValidMissile(id)) return 0;
 
@@ -337,27 +369,31 @@ stock ExplodeMissile(id)
 			new Float:x = gMissiles[id][misX], Float:y = gMissiles[id][misY], Float:z = gMissiles[id][misZ],
 				Float:vx = gMissiles[id][misVX], Float:vy = gMissiles[id][misVY], Float:vz = gMissiles[id][misVZ],
 				Float:speed = gMissiles[id][misSpeed],
-				Float:step = gMissiles[id][misStep];
+				Float:step = gMissiles[id][misStep],
+				ttl = gMissiles[id][misTTL],
+				virtual_world = gMissiles[id][misVirtualWorld], interior = gMissiles[id][misInterior];
 
 			CreateExplosion(x, y, z, 12, 5.0);
 
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 4000, speed, step, 0.01);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 4000, speed, step, 0.01);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 4000, speed, step, 0.01);
-			FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_RPG, 4000, speed, step, 0.01);
+			CallLocalFunction("OnCAMissileExplode", "iiiifff", id, hittype, hitid, 1, x, y, z);
 
 			DestroyMissile(id);
+
+			FireMissile(x, y, z, virtual_world, interior, vx, vy, vz, MISSILE_MODE_RPG, ttl, speed, step, 0.01, .initial_check = false);
+			FireMissile(x, y, z, virtual_world, interior, vx, vy, vz, MISSILE_MODE_RPG, ttl, speed, step, 0.01, .initial_check = false);
+			FireMissile(x, y, z, virtual_world, interior, vx, vy, vz, MISSILE_MODE_RPG, ttl, speed, step, 0.01, .initial_check = false);
+			FireMissile(x, y, z, virtual_world, interior, vx, vy, vz, MISSILE_MODE_RPG, ttl, speed, step, 0.01, .initial_check = false);
 		}
 
 		default:
 		{
 			CreateExplosion(gMissiles[id][misX], gMissiles[id][misY], gMissiles[id][misZ], 10, 25.0);
 
+			CallLocalFunction("OnCAMissileExplode", "iifffii", id, hittype, hitid, 0, gMissiles[id][misX], gMissiles[id][misY], gMissiles[id][misZ], gMissiles[id][misVirtualWorld], gMissiles[id][misInterior]);
+
 			DestroyMissile(id);
 		}
 	}
-
-	
 
 	return 1;
 }
@@ -384,6 +420,13 @@ stock DestroyAllMissiles()
 	return 1;
 }
 
+stock GetMissileExtra(id)
+{
+	if(!IsValidMissile(id)) return cellmin;
+
+	return gMissiles[id][misExtra];
+}
+
 stock ProcessMissile(id)
 {
 	if(GetTickCount() - gMissiles[id][misSpawnTick] > gMissiles[id][misTTL])
@@ -401,6 +444,26 @@ stock ProcessMissile(id)
 		Float:skill = gMissiles[id][misSkill],
 		Float:step = gMissiles[id][misStep],
 		Float:jitter = gMissiles[id][misJitter];
+
+	#if defined MISSILE_VEHICLE_CHECK
+
+	for(new i = 1; i <= MAX_VEHICLES; ++i)
+	{
+		if(GetVehicleModel(i))
+		{
+			new Float:vehx, Float:vehy, Float:vehz;
+			GetVehiclePos(i, vehx, vehy, vehz);
+			
+			if(VectorSize(x - vehx, y - vehy, z - vehz) < 10.0)
+			{
+				ExplodeMissile(id, MISSILE_HIT_TYPE_VEHICLE, i);
+
+				return 1;
+			}
+		}
+	}
+
+	#endif
 
 	switch(mode)
 	{
@@ -447,7 +510,7 @@ stock ProcessMissile(id)
 
 							if(VectorSize(dx, dy, dz) < 3.0)
 							{
-								ExplodeMissile(id);
+								ExplodeMissile(id, MISSILE_HIT_TYPE_PLAYER, target_id);
 
 								return 1;
 							}
@@ -467,7 +530,7 @@ stock ProcessMissile(id)
 
 							if(VectorSize(dx, dy, dz) < 3.0)
 							{
-								ExplodeMissile(id);
+								ExplodeMissile(id, MISSILE_HIT_TYPE_VEHICLE, target_id);
 
 								return 1;
 							}
@@ -483,7 +546,7 @@ stock ProcessMissile(id)
 
 						if(VectorSize(dx, dy, dz) < 3.0)
 						{
-							ExplodeMissile(id);
+							ExplodeMissile(id, MISSILE_HIT_TYPE_COLLISION);
 
 							return 1;
 						}
@@ -526,7 +589,7 @@ stock ProcessMissile(id)
 	{
 		case MISSILE_MODE_SWARM:
 		{
-			if(GetTickCount() - gMissiles[id][misSpawnTick] > 1500 && CA_ContactTest(13592, x, y, z, 0.0, 0.0, 0.0))
+			if(GetTickCount() - gMissiles[id][misSpawnTick] > 1000 && CA_ContactTest(13592, x, y, z, 0.0, 0.0, 0.0))
 			{
 				gMissiles[id][misX] = x;
 				gMissiles[id][misY] = y;
@@ -539,13 +602,13 @@ stock ProcessMissile(id)
 		}
 	}
 
-	if(CA_RayCastLine(ox, oy, oz, x, y, z, x, y, z) != 0)
+	if((!gMissiles[id][misInitCheck] || GetTickCount() - gMissiles[id][misSpawnTick] > 100) && CA_RayCastLine(ox, oy, oz, x, y, z, x, y, z) != 0)
 	{
 		gMissiles[id][misX] = x;
 		gMissiles[id][misY] = y;
 		gMissiles[id][misZ] = z;
 
-		ExplodeMissile(id);
+		ExplodeMissile(id, MISSILE_HIT_TYPE_COLLISION);
 
 		return 1;
 	}
@@ -595,7 +658,7 @@ stock static cmiss_randomEx(rmin, rmax)
 	return (rmin + random(rmax - rmin));
 }
 
-stock static Float:cmiss_frandomEx(Float:min, Float:max = (Float:0x7FFFFFFF), dp = 2)
+stock static Float:cmiss_frandomEx(Float:min, Float:max = (Float:0x7FFFFFFF), dp = 3)
 {
     new
         Float:mul = floatpower(10.0, float(dp));
