@@ -483,7 +483,7 @@ stock FireSAMTurret(id, targetid)
 
 	#endif
 
-	return FireMissile(x, y, z, vx, vy, vz, MISSILE_MODE_HOMING, 25000, gSAMTurrets[id][samSpeed], 1.0, 0.03, gSAMTurrets[id][samSkill], .target_type = MISSILE_TARGET_VEHICLE, .target_id = targetid);
+	return FireMissile(x, y, z, gSAMTurrets[id][samVirtualWorld], gSAMTurrets[id][samInterior], vx, vy, vz, MISSILE_MODE_HOMING, 25000, gSAMTurrets[id][samSpeed], 1.0, 0.03, gSAMTurrets[id][samSkill], .target_type = MISSILE_TARGET_VEHICLE, .target_id = targetid);
 }
 
 stock FindSAMTurretTarget(id)
@@ -557,14 +557,14 @@ stock FindSAMTurretTarget(id)
 
 stock SetSAMTurretHostileState(id, playerid, hostile_state)
 {
+	if(!IsValidSAMTurret(id)) return 0;
+
 	if(playerid == -1)
 	{
-		for(new i = 0; i < MAX_PLAYERS; i ++) SetSAMTurretHostileState(id, i, hostile_state);
+		for(new i = 0; i < MAX_PLAYERS; i ++) gSAMTurretHostileState[id]{i} = (hostile_state ? 1 : 0);
 	}
 	else
 	{
-		if(!IsValidSAMTurret(id)) return 0;
-
 		gSAMTurretHostileState[id]{playerid} = (hostile_state ? 1 : 0);
 	}
 
